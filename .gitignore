@@ -8,7 +8,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-entrrhhs1/
 build/
 develop-eggs/
 dist/
@@ -34,6 +33,7 @@ __pycache__/
 node_modules/
 local_dir/
 venv/
+.venv/
 staticfiles/
 mediafiles/
 service-account.json
