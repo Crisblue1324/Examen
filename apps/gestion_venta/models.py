@@ -1,6 +1,7 @@
 from django.db import models
 from django.forms import model_to_dict
 
+
 class Categoria(models.Model):
     name = models.CharField(verbose_name='Nombre', max_length=50, unique=True)
     description = models.TextField(verbose_name="Descripción")
@@ -16,6 +17,7 @@ class Categoria(models.Model):
         verbose_name = 'Categoria'
         verbose_name_plural ='Categorias'
         ordering =['-name']
+
 
 class Producto(models.Model):
     name = models.CharField(verbose_name='Nombre de los productos', max_length=50, unique=True)
@@ -36,6 +38,7 @@ class Producto(models.Model):
         verbose_name_plural ='Productos'
         ordering =['-name']
 
+
 class Cliente (models.Model): 
     name = models.CharField(verbose_name='Nombre', max_length=50, unique=True)
     apellido = models.CharField(verbose_name='Apellido', max_length=50)
@@ -54,3 +57,44 @@ class Cliente (models.Model):
         verbose_name = 'Cliente'
         verbose_name_plural ='Clientes'
         ordering =['-name']
+
+
+class Factura(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL,  null=True, verbose_name='Cliente')
+    fecha = models.DateField(verbose_name='Fecha de la factura', auto_now_add=True)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    iva = models.DecimalField(max_digits=10, decimal_places=2, default=0.12)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    estado = models.BooleanField(verbose_name = 'Estado de la factura', default=True)
+    
+    def __str__(self):
+        return str(self.id)
+    
+    def get_model_to_dict(self):
+        item= model_to_dict(self)
+        return item
+    
+    class Meta:
+        verbose_name = 'Factura'
+        verbose_name_plural ='Facturas'
+        ordering =['-id']
+
+
+class DetalleFactura(models.Model):
+    factura = models.ForeignKey(Factura, on_delete=models.CASCADE, verbose_name='Factura')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, verbose_name='Producto')
+    cantidad = models.PositiveIntegerField(verbose_name='Cantidad', default=0)
+    precio = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    
+    def __str__(self):
+        return str(self.id)
+    
+    def get_model_to_dict(self):
+        item= model_to_dict(self)
+        return item
+    
+    class Meta:
+        verbose_name = 'Detalle de la factura'
+        verbose_name_plural ='Detalles de la factura'
+        ordering =['-id']
