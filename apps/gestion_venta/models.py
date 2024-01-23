@@ -98,3 +98,4 @@ class DetalleFactura(models.Model):
         verbose_name = 'Detalle de la factura'
         verbose_name_plural ='Detalles de la factura'
         ordering =['-id']
+
