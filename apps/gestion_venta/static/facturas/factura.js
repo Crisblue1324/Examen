@@ -55,7 +55,6 @@ d.addEventListener('DOMContentLoaded', function (e) {
 
     // ------------------- calcula el total de la factura ---------------------------
     function totals() {
-        console.log("estoy en totals()")
         let sumTotals = 0
         detailFactura.forEach((producto) => {
             sumTotals += producto.subtotal
@@ -71,7 +70,6 @@ d.addEventListener('DOMContentLoaded', function (e) {
         if (parseFloat(d.getElementById('id_total').value) > 0.00) { 
             const formData = new FormData($form)
             formData.append("detail", JSON.stringify(detailFactura))
-            console.log(JSON.stringify(detailFactura))
             const factura = await fetchPost(location.pathname, formData)
             if (!factura.ok) return alert("error en los datos")
             window.location = backUrl

@@ -35,4 +35,5 @@ urlpatterns += [
     path('factura/update/<int:pk>',factura.FacturaUpdateView.as_view() ,name="factura_update" ),
     path('factura/delete/<int:pk>',factura.FacturaDeleteView.as_view() ,name="factura_delete" ),
     path('factura/details/',factura.FacturaDetailsView.as_view() ,name="factura_details" ),
+    path('factura/print/<int:pk>',factura.FacturaReportView.as_view() ,name="factura_print")
 ]

@@ -1,13 +1,15 @@
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from apps.gestion_venta.forms.factura import FacturaForm
-from apps.gestion_venta.models import Factura, DetalleFactura, Producto
+from apps.gestion_venta.models import Factura, DetalleFactura, Producto, Cliente
 from apps.security.mixins.mixins import ListViewMixin,CreateViewMixin,UpdateViewMixin,DeleteViewMixin,PermissionMixin
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 import json
 from django.db.models import Q
 from datetime import datetime
 from django.views import View
+from rrhhs import utils
+from django.shortcuts import get_object_or_404, redirect
 
 class FacturaListView(PermissionMixin,ListViewMixin,ListView):
     model = Factura
@@ -76,6 +78,25 @@ class FacturaCreateView(PermissionMixin,CreateViewMixin,CreateView,):
         producto = Producto.objects.filter(id=detail['id_producto'])
         stock = producto.get().stock - detail['cant']
         producto.update(stock=stock)
+
+        utils.generate_pdf(
+                'facturas/report.html',
+                {
+                    'cliente': Cliente.objects.get(id=data['cliente']).get_full_name(),
+                    'fecha': data['fecha'],
+                    'subtotal': data['subtotal'],
+                    'iva': data['iva'],
+                    'total': data['total'],
+                    'detalle': list(DetalleFactura.objects.filter(factura_id=self.kwargs['pk']).values(
+                        'producto_id',
+                        'producto__name',
+                        'cantidad',
+                        'precio',
+                        'subtotal'
+                    ))
+                },
+                "facturas/factura-{}.pdf".format(self.kwargs['pk'])
+        )
         return JsonResponse({'id':cabecera.id})
     
 class FacturaUpdateView(PermissionMixin,UpdateViewMixin,UpdateView):
@@ -106,6 +127,7 @@ class FacturaUpdateView(PermissionMixin,UpdateViewMixin,UpdateView):
                 'prec':float(det['precio']),
                 'subtotal':float(det['subtotal'])
             })
+
         context['detail_producto'] = json.dumps(lista)
         return context
     
@@ -137,6 +159,28 @@ class FacturaUpdateView(PermissionMixin,UpdateViewMixin,UpdateView):
                 cantidad=detail['cant'],
                 precio=detail['prec'],
                 subtotal=detail['subtotal']
+            )
+        producto = Producto.objects.filter(id=detail['id_producto'])
+        stock = producto.get().stock - detail['cant']
+        producto.update(stock=stock)
+
+        utils.generate_pdf(
+                'facturas/report.html',
+                {
+                    'cliente': Cliente.objects.get(id=data['cliente']).get_full_name(),
+                    'fecha': data['fecha'],
+                    'subtotal': data['subtotal'],
+                    'iva': data['iva'],
+                    'total': data['total'],
+                    'detalle': list(DetalleFactura.objects.filter(factura_id=self.kwargs['pk']).values(
+                        'producto_id',
+                        'producto__name',
+                        'cantidad',
+                        'precio',
+                        'subtotal'
+                    ))
+                },
+                "facturas/factura-{}.pdf".format(self.kwargs['pk'])
             )
         return JsonResponse({'id':self.kwargs['pk']})
     
@@ -175,5 +219,16 @@ class FacturaDetailsView(PermissionMixin, View):
                     'subtotal'
                 ))
             }}, status=200)
+        except Factura.DoesNotExist:
+            return JsonResponse({'error': 'No existe la factura'}, status=400)
+        
+
+class FacturaReportView(PermissionMixin, View):
+    def get(self, request, *args, **kwargs):
+        try:
+            id = self.kwargs['pk']
+            factura = get_object_or_404(Factura, id=id)
+            pdf_url = '/media/facturas/factura-{}.pdf'.format(id)
+            return redirect(pdf_url)
         except Factura.DoesNotExist:
             return JsonResponse({'error': 'No existe la factura'}, status=400)

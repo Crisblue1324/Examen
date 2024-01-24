@@ -20,14 +20,13 @@
 {% endblock %}
 
 {% block rows %}
-  
     {% for factura in facturas %}
         <tr>
             <td class="text-center">{{factura.cliente|upper}}</td>
             <td class="text-center">{{factura.fecha}}</td>
             <td class="text-center">{{factura.total}}</td>
-
             <td class="text-center ">
+                <a class="text-warning" href="{% url 'gestion_venta:factura_print' factura.id %}" target="_blank" data-bs-toggle="tooltip" data-bs-title="Ver factura"><i class="bi bi-file-ruled"></i></a>
                 <a class="text-success" href="{% url 'gestion_venta:factura_update' factura.id %}" data-bs-toggle="tooltip" data-bs-title="Editar la factura"><i class="bi bi-pencil-fill"></i></a>
                 <a class="text-danger" href="{% url 'gestion_venta:factura_delete' factura.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar la factura"><i class="bi bi-x-circle-fill"></i></a>
                 <button rel="rel-detail" data-id="{{ factura.id }}" type="button" class="text-info" data-bs-toggle="modal"
@@ -46,7 +45,6 @@
         </tr>
     {% endfor%}  
 {% endblock %}
-
 
 {% block modal %}
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">

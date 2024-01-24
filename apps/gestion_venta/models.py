@@ -1,6 +1,8 @@
 from django.db import models
 from django.forms import model_to_dict
-from datetime import date, datetime
+from datetime import date
+from rrhhs import utils
+from django.conf import settings
 
 class Categoria(models.Model):
     name = models.CharField(verbose_name='Nombre', max_length=50, unique=True)
@@ -75,12 +77,14 @@ class Factura(models.Model):
     def get_model_to_dict(self):
         item= model_to_dict(self)
         return item
-    
+            
+    def save(self, *args, **kwargs):
+        super(Factura, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'Factura'
         verbose_name_plural ='Facturas'
         ordering =['-id']
-
 
 class DetalleFactura(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE, verbose_name='Factura')
