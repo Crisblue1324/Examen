@@ -5,6 +5,7 @@ from apps.core.models import ModelBase, Organization
 from apps.personal_file.models import Employee
 from django.core.validators import FileExtensionValidator
 from django.shortcuts import get_object_or_404
+from rrhhs import utils
 
 class Supplier(ModelBase):
     name = models.CharField("Nombre", max_length=100)
@@ -85,6 +86,26 @@ class Application(ModelBase):
 
         if self.approved_boss and self.approved_commission and self.cost is not None:
             self.state = True
+
+            pdf = utils.generate_pdf(
+                'applications/report.html',
+                {
+                    'employee': self.employee.get_full_name(),
+                    'course': self.course.name,
+                    'description': self.description,
+                    'start_date': self.fecha_inicio,
+                    'end_date': self.fecha_fin,
+                    'sucursal': self.sucursal.name,
+                },
+                "applications/{}-{}-{}.pdf".format(self.employee.get_full_name(), self.course.name, self.year)
+            )
+
+            utils.send_email(
+                self.employee.email,
+                f'Solicitud del curso {self.course.name} aprobada',
+                'Su solicitud de curso ha sido aprobada',
+                pdf
+            )
         super().save(*args, **kwargs)
 
     def get_model_dict(self):
