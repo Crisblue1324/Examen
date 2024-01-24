@@ -11,6 +11,26 @@
     <div class="col-md-3">
         {% include "components/field.html" with field=form.fecha %}
     </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-3 ">
+        <label for="id_producto" class="form-label">Producto</label>
+        <select name="producto" id="id_producto" class="form-select">
+            <option value="" selected>Seleccione un producto</option>
+            {% for producto in productos %}
+                <option data-value="{{producto.precio}}" value="{{ producto.id }}">{{ producto.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="id_cantidad" class="form-label">Cantidad</label>
+        <input type="number" name="cantidad" id="id_cantidad" class="form-control" placeholder="Ingrese la cantidad">
+    </div>
+    <div class="col-md-3">
+        <button type="button" class="btn btn-primary" id="btnAgregar">Agregar</button>
+    </div>
+</div>
+<div class="row mb-3">
     <div class="col-md-3">
         {% include "components/field.html" with field=form.subtotal %}
     </div>
@@ -21,12 +41,7 @@
         {% include "components/field.html" with field=form.total %}
     </div>
 </div>
-<div class="row mb-3">
-    <div class="col-md-3 ">
-        
-    </div>
 {% endblock %}
-
 {% block detalle %}
 <section class="table-responsive" style="margin-top:-35px;margin-bottom: -35px;">
     <table class="table table-hover table-fluid " id="tableOvertime">
@@ -41,11 +56,15 @@
        </tr>
      </thead>
      <tbody id="detalle" class="text-center">
-
      </tbody>
     </table>
  </section>
 {% endblock %}
 
 {% block file_js %}
+<script>
+    var backUrl = "{{back_url}}"
+    var detail_producto = JSON.parse("{{ detail_producto|escapejs }}")
+</script>
+<script src="{% static 'facturas/factura.js' %}"></script>
 {% endblock %}

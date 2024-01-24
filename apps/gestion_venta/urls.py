@@ -1,5 +1,5 @@
 from django.urls import path
-from apps.gestion_venta.views import categoria, producto, cliente
+from apps.gestion_venta.views import categoria, producto, cliente, factura
 
 app_name = "gestion_venta"
 urlpatterns = []
@@ -26,4 +26,12 @@ urlpatterns += [
     path('cliente/create',cliente.ClienteCreateView.as_view(),name="cliente_create" ),
     path('cliente/update/<int:pk>',cliente.ClienteUpdateView.as_view() ,name="cliente_update" ),
     path('cliente/delete/<int:pk>',cliente.ClienteDeleteView.as_view() ,name="cliente_delete" ),
+]
+
+# urls factura
+urlpatterns += [
+    path('factura/list', factura.FacturaListView.as_view(),name="factura_list" ),
+    path('factura/create',factura.FacturaCreateView.as_view(),name="factura_create" ),
+    path('factura/update/<int:pk>',factura.FacturaUpdateView.as_view() ,name="factura_update" ),
+    path('factura/delete/<int:pk>',factura.FacturaDeleteView.as_view() ,name="factura_delete" ),
 ]

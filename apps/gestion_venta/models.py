@@ -1,6 +1,6 @@
 from django.db import models
 from django.forms import model_to_dict
-
+from datetime import date, datetime
 
 class Categoria(models.Model):
     name = models.CharField(verbose_name='Nombre', max_length=50, unique=True)
@@ -61,14 +61,18 @@ class Cliente (models.Model):
 
 class Factura(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL,  null=True, verbose_name='Cliente')
-    fecha = models.DateField(verbose_name='Fecha de la factura', auto_now_add=True)
+    fecha = models.DateField(verbose_name='Fecha de la factura', default=date.today)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    iva = models.DecimalField(max_digits=10, decimal_places=2, default=0.12)
+    iva = models.IntegerField(verbose_name='Iva', default=12)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    estado = models.BooleanField(verbose_name = 'Estado de la factura', default=True)
     
     def __str__(self):
         return str(self.id)
+    
+    def save(self, *args, **kwargs):
+        if isinstance(self.fecha, str):
+            self.fecha = datetime.strptime(self.fecha, '%d/%m/%Y').date()
+        super().save(*args, **kwargs)
     
     def get_model_to_dict(self):
         item= model_to_dict(self)
@@ -98,4 +102,3 @@ class DetalleFactura(models.Model):
         verbose_name = 'Detalle de la factura'
         verbose_name_plural ='Detalles de la factura'
         ordering =['-id']
-
