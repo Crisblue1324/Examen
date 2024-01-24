@@ -18,7 +18,7 @@
         <select name="producto" id="id_producto" class="form-select">
             <option value="" selected>Seleccione un producto</option>
             {% for producto in productos %}
-                <option data-value="{{producto.precio}}" value="{{ producto.id }}">{{ producto.name }}</option>
+                <option data-stock="{{producto.stock}}" data-value="{{producto.precio}}" value="{{ producto.id }}">{{ producto.name }}</option>
             {% endfor %}
         </select>
     </div>

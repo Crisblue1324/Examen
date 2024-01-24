@@ -31,17 +31,6 @@ d.addEventListener('DOMContentLoaded', function (e) {
         present()
         totals()
     }
-    // ------------------- actualiza el detalle de la factura seleccionado -----------
-    const reCalculation = (prec) => {
-        detailFactura = detailFactura.map((item) => {
-            let { id_producto, descripcion, cant } = item
-            let value = parseFloat((cant * prec).toFixed(2))
-            c({ id_producto, descripcion, cant, value })
-            return { id_producto, descripcion, cant, value }
-        })
-        present()
-        totals()
-    }
     // ---------------  borra el producto dado el id en el arreglo detailFactura[] ------------
     const deleteProducto = (id) => {
         detailFactura = detailFactura.filter((item) => item.id_producto !== id)
@@ -104,7 +93,11 @@ d.addEventListener('DOMContentLoaded', function (e) {
             return
         }
         const precio = $id_producto.options[$id_producto.selectedIndex].dataset.value.replace(',', '.');
-        
+        const stock = $id_producto.options[$id_producto.selectedIndex].dataset.stock
+        if (cantidad > stock) {
+            alert(`La cantidad debe ser menor o igual al stock del producto: ${stock}`)
+            return
+        }
         const productoDescription = $id_producto.options[$id_producto.selectedIndex].text
         calculation(producto, productoDescription, cantidad, precio)
     })

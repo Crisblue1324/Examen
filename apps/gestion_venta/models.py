@@ -49,6 +49,9 @@ class Cliente (models.Model):
     def __str__(self):
         return self.name
     
+    def get_full_name(self):
+        return self.name + ' ' + self.apellido
+
     def get_model_to_dict(self):
         item= model_to_dict(self)
         return item
@@ -68,11 +71,6 @@ class Factura(models.Model):
     
     def __str__(self):
         return str(self.id)
-    
-    def save(self, *args, **kwargs):
-        if isinstance(self.fecha, str):
-            self.fecha = datetime.strptime(self.fecha, '%d/%m/%Y').date()
-        super().save(*args, **kwargs)
     
     def get_model_to_dict(self):
         item= model_to_dict(self)
