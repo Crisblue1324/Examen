@@ -87,7 +87,7 @@ class FacturaCreateView(PermissionMixin,CreateViewMixin,CreateView,):
                     'subtotal': data['subtotal'],
                     'iva': data['iva'],
                     'total': data['total'],
-                    'detalle': list(DetalleFactura.objects.filter(factura_id=self.kwargs['pk']).values(
+                    'detalle': list(DetalleFactura.objects.filter(factura_id=cabecera.id).values(
                         'producto_id',
                         'producto__name',
                         'cantidad',
@@ -95,7 +95,7 @@ class FacturaCreateView(PermissionMixin,CreateViewMixin,CreateView,):
                         'subtotal'
                     ))
                 },
-                "facturas/factura-{}.pdf".format(self.kwargs['pk'])
+                "facturas/factura-{}.pdf".format(cabecera.id)
         )
         return JsonResponse({'id':cabecera.id})
     
@@ -127,7 +127,7 @@ class FacturaUpdateView(PermissionMixin,UpdateViewMixin,UpdateView):
                 'prec':float(det['precio']),
                 'subtotal':float(det['subtotal'])
             })
-
+            
         context['detail_producto'] = json.dumps(lista)
         return context
     
@@ -204,7 +204,6 @@ class FacturaDetailsView(PermissionMixin, View):
             factura = Factura.objects.get(
                 id=request.GET.get('id'))
             
-
             return JsonResponse({'factura':{
                 'cliente': factura.cliente.get_full_name(),
                 'fecha': factura.fecha,
